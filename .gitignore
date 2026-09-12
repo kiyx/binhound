@@ -1,0 +1,31 @@
+# Build
+build/
+out/
+cmake-build-*/
+*.o
+*.obj
+*.a
+*.so
+*.exe
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+CTestTestfile.cmake
+Testing/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local
+.env
+*.local
