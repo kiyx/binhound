@@ -57,7 +57,7 @@
       "displayName": "CI (Ninja, Linux/macOS)",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/ci",
-      "condition": { "notEquals": { "hostSystemName": "Windows" } },
+      "condition": { "type": "notEquals", "lhs": "${hostSystemName}", "rhs": "Windows" },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "BINHOUND_ENABLE_LTO": "ON",
@@ -70,7 +70,7 @@
       "generator": "Visual Studio 17 2022",
       "architecture": "x64",
       "binaryDir": "${sourceDir}/build/ci",
-      "condition": { "equals": { "hostSystemName": "Windows" } },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" },
       "cacheVariables": {
         "BINHOUND_ENABLE_LTO": "ON"
       }

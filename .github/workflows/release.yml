@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: release (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-x86_64
+            os: ubuntu-latest
+            preset: ci
+          - name: windows-x86_64
+            os: windows-latest
+            preset: ci-msvc
+          - name: macos-arm64
+            os: macos-latest
+            preset: ci
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }}
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }}
+      - name: Install
+        run: cmake --install build/ci --config Release --prefix dist
+      - name: Package (unix)
+        if: runner.os != 'Windows'
+        run: tar -czf binhound-${{ github.ref_name }}-${{ matrix.name }}.tar.gz -C dist .
+      - name: Package (windows)
+        if: runner.os == 'Windows'
+        run: Compress-Archive -Path dist/* -DestinationPath binhound-${{ github.ref_name }}-${{ matrix.name }}.zip
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: binhound-*
+          generate_release_notes: true

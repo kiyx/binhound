@@ -6,6 +6,11 @@
 
 English | [Italiano](README.it.md)
 
+[![CI](https://github.com/kiyx/binhound/actions/workflows/ci.yml/badge.svg)](https://github.com/kiyx/binhound/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/kiyx/binhound/actions/workflows/codeql.yml/badge.svg)](https://github.com/kiyx/binhound/actions/workflows/codeql.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](#requirements-summary)
+
 ## What it does
 
 BinHound takes an executable file for which no source code is available (a stripped binary, a firmware image) and answers three questions:
@@ -137,13 +142,17 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for details.
 
 Versions are targets, not promises. Each milestone ends with a tagged release and updated documentation.
 
-## Building (planned, not implemented yet)
+## Building
 
 ```bash
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j
-./build/bin/binhound scan /bin/ls --format cyclonedx --output sbom.json
+cmake --preset debug
+cmake --build --preset debug
+ctest --preset debug
+./build/debug/binhound --help
 ```
+
+Release build (LTO + hardening): `cmake --preset release && cmake --build --preset release`.
+CI runs Debug, ASan/UBSan, Release, clang-tidy, coverage and CodeQL on Linux, Windows and macOS.
 
 ## Contributing
 

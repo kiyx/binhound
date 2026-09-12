@@ -5,39 +5,76 @@ on:
     branches: [main]
   pull_request:
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+  build:
+    name: build (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-gcc
+            os: ubuntu-latest
+            preset: ci
+            flags: ""
+          - name: linux-clang
+            os: ubuntu-latest
+            preset: ci
+            flags: "-DCMAKE_CXX_COMPILER=clang++"
+          - name: windows-msvc
+            os: windows-latest
+            preset: ci-msvc
+            flags: ""
+          - name: macos-appleclang
+            os: macos-latest
+            preset: ci
+            flags: ""
     steps:
       - uses: actions/checkout@v4
-      - name: Configure (Debug)
-        run: cmake --preset debug
-      - name: Build (Debug)
-        run: cmake --build --preset debug
-      - name: Test (Debug)
-        run: ctest --preset debug
-      - name: Configure (ASan/UBSan)
+      - name: Setup ccache
+        if: runner.os != 'Windows'
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ matrix.name }}
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }} ${{ matrix.flags }}
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }}
+      - name: Test
+        run: ctest --preset ${{ matrix.preset }}
+
+  asan:
+    name: asan-ubsan
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
         run: cmake --preset asan
-      - name: Build (ASan/UBSan)
+      - name: Build
         run: cmake --build --preset asan
-      - name: Test (ASan/UBSan)
+      - name: Test
         run: ctest --preset asan
-      - name: Configure (Release, LTO, hardening)
-        run: cmake --preset release
-      - name: Build (Release)
-        run: cmake --build --preset release
-      - name: Test (Release)
-        run: ctest --preset release
 
   analyze:
+    name: clang-tidy
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - name: Install clang-tidy
         run: |
           sudo apt-get update
           sudo apt-get install -y clang-tidy ninja-build
-      - name: Configure (Debug)
+      - name: Configure
         run: cmake --preset debug
       - name: Run clang-tidy
         run: |
@@ -45,7 +82,9 @@ jobs:
             | xargs -0 clang-tidy -p build/debug --warnings-as-errors='*'
 
   format:
+    name: clang-format
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Install clang-format
@@ -56,3 +95,35 @@ jobs:
         run: |
           find src tests -type f \( -name '*.cpp' -o -name '*.hpp' \) -print0 \
             | xargs -0 clang-format --dry-run --Werror
+
+  coverage:
+    name: coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install gcovr
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcovr ninja-build
+      - name: Configure with coverage
+        run: |
+          cmake -B build/coverage -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS="--coverage -O0 -g"
+      - name: Build
+        run: cmake --build build/coverage
+      - name: Test
+        run: ctest --test-dir build/coverage --output-on-failure
+      - name: Generate coverage report
+        run: |
+          gcovr -r . build/coverage
+          gcovr -r . build/coverage --xml-pretty -o coverage.xml
+          gcovr -r . build/coverage --html-details -o coverage.html
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            coverage.xml
+            coverage.html

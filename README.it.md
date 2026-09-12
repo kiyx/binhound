@@ -6,6 +6,11 @@
 
 [English](README.md) | Italiano
 
+[![CI](https://github.com/kiyx/binhound/actions/workflows/ci.yml/badge.svg)](https://github.com/kiyx/binhound/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/kiyx/binhound/actions/workflows/codeql.yml/badge.svg)](https://github.com/kiyx/binhound/actions/workflows/codeql.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](#riepilogo-requisiti)
+
 ## Cosa fa
 
 BinHound prende un file eseguibile di cui non esiste il codice sorgente (un binario compilato con i simboli rimossi, un firmware) e risponde a tre domande:
@@ -137,13 +142,17 @@ I dettagli sono in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 Le versioni sono obiettivi, non promesse. Ogni milestone si chiude con una release taggata e documentazione aggiornata.
 
-## Compilazione (prevista, non ancora implementata)
+## Compilazione
 
 ```bash
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j
-./build/bin/binhound scan /bin/ls --format cyclonedx --output sbom.json
+cmake --preset debug
+cmake --build --preset debug
+ctest --preset debug
+./build/debug/binhound --help
 ```
+
+Build di release (LTO + hardening): `cmake --preset release && cmake --build --preset release`.
+La CI multipiattaforma esegue Debug, ASan/UBSan, Release, clang-tidy, coverage e CodeQL su Linux, Windows e macOS.
 
 ## Contribuire
 
