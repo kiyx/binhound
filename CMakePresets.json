@@ -51,6 +51,29 @@
       "cacheVariables": {
         "BINHOUND_ENABLE_SANITIZERS": "ON"
       }
+    },
+    {
+      "name": "ci",
+      "displayName": "CI (Ninja, Linux/macOS)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/ci",
+      "condition": { "notEquals": { "hostSystemName": "Windows" } },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "BINHOUND_ENABLE_LTO": "ON",
+        "BINHOUND_ENABLE_HARDENING": "ON"
+      }
+    },
+    {
+      "name": "ci-msvc",
+      "displayName": "CI (MSVC, Windows)",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/build/ci",
+      "condition": { "equals": { "hostSystemName": "Windows" } },
+      "cacheVariables": {
+        "BINHOUND_ENABLE_LTO": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -58,23 +81,15 @@
     { "name": "relwithdebinfo", "configurePreset": "relwithdebinfo" },
     { "name": "release", "configurePreset": "release" },
     { "name": "bench", "configurePreset": "bench" },
-    { "name": "asan", "configurePreset": "asan" }
+    { "name": "asan", "configurePreset": "asan" },
+    { "name": "ci", "configurePreset": "ci" },
+    { "name": "ci-msvc", "configurePreset": "ci-msvc", "configuration": "Release" }
   ],
   "testPresets": [
-    {
-      "name": "debug",
-      "configurePreset": "debug",
-      "output": { "outputOnFailure": true }
-    },
-    {
-      "name": "release",
-      "configurePreset": "release",
-      "output": { "outputOnFailure": true }
-    },
-    {
-      "name": "asan",
-      "configurePreset": "asan",
-      "output": { "outputOnFailure": true }
-    }
+    { "name": "debug", "configurePreset": "debug", "output": { "outputOnFailure": true } },
+    { "name": "release", "configurePreset": "release", "output": { "outputOnFailure": true } },
+    { "name": "asan", "configurePreset": "asan", "output": { "outputOnFailure": true } },
+    { "name": "ci", "configurePreset": "ci", "output": { "outputOnFailure": true } },
+    { "name": "ci-msvc", "configurePreset": "ci-msvc", "configuration": "Release", "output": { "outputOnFailure": true } }
   ]
 }

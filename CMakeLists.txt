@@ -61,17 +61,17 @@ else()
     endif()
 
     if(BINHOUND_ENABLE_HARDENING)
-        target_compile_options(binhound PRIVATE
-            -fstack-protector-strong
-            -fstack-clash-protection
-            -fcf-protection)
-        target_link_options(binhound PRIVATE
-            -Wl,-z,relro
-            -Wl,-z,now)
-        if(CMAKE_BUILD_TYPE STREQUAL "Release"
-           OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo"
-           OR CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+        include(CheckCXXCompilerFlag)
+        foreach(flag IN ITEMS -fstack-protector-strong -fstack-clash-protection -fcf-protection)
+            string(MAKE_C_IDENTIFIER "BINHOUND_HAS${flag}" flag_id)
+            check_cxx_compiler_flag("${flag}" ${flag_id})
+            if(${flag_id})
+                target_compile_options(binhound PRIVATE "${flag}")
+            endif()
+        endforeach()
+        if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
             target_compile_definitions(binhound PRIVATE _FORTIFY_SOURCE=3)
+            target_link_options(binhound PRIVATE -Wl,-z,relro -Wl,-z,now)
         endif()
     endif()
 endif()
@@ -85,6 +85,9 @@ if(BINHOUND_ENABLE_LTO)
         message(WARNING "LTO not supported by the compiler: ${BINHOUND_IPO_OUTPUT}")
     endif()
 endif()
+
+include(GNUInstallDirs)
+install(TARGETS binhound RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 include(CTest)
 if(BUILD_TESTING)
