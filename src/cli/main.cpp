@@ -6,7 +6,7 @@ namespace
 
 constexpr std::string_view kProgramName = "binhound";
 
-void print_usage()
+void printUsage()
 {
     std::cout << "binhound " << BINHOUND_VERSION << "\n"
               << "Static SBOM/CBOM generator and CRA readiness checker for compiled binaries\n"
@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 {
     if(argc < 2)
     {
-        print_usage();
+        printUsage();
         return 0;
     }
 
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 
     if(command == "--help")
     {
-        print_usage();
+        printUsage();
         return 0;
     }
 
@@ -48,6 +48,6 @@ int main(int argc, char* argv[])
     }
 
     std::cerr << "error: unknown command '" << command << "'\n";
-    print_usage();
+    printUsage();
     return 2;
 }

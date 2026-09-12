@@ -1,0 +1,13 @@
+{
+  "C_Cpp.intelliSenseEngine": "disabled",
+  "clangd.arguments": [
+    "--compile-commands-dir=${workspaceFolder}/build/debug",
+    "--background-index",
+    "--clang-tidy"
+  ],
+  "cmake.useCMakePresets": "always",
+  "editor.formatOnSave": true,
+  "[cpp]": {
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+  }
+}

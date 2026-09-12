@@ -13,12 +13,34 @@
       }
     },
     {
+      "name": "relwithdebinfo",
+      "displayName": "RelWithDebInfo",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/relwithdebinfo",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
       "name": "release",
-      "displayName": "Release",
+      "displayName": "Release with LTO and hardening",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/release",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "BINHOUND_ENABLE_LTO": "ON",
+        "BINHOUND_ENABLE_HARDENING": "ON"
+      }
+    },
+    {
+      "name": "bench",
+      "displayName": "Release for local benchmarks (march=native)",
+      "inherits": "release",
+      "binaryDir": "${sourceDir}/build/bench",
+      "cacheVariables": {
+        "BINHOUND_ENABLE_NATIVE": "ON"
       }
     },
     {
@@ -33,13 +55,20 @@
   ],
   "buildPresets": [
     { "name": "debug", "configurePreset": "debug" },
+    { "name": "relwithdebinfo", "configurePreset": "relwithdebinfo" },
     { "name": "release", "configurePreset": "release" },
+    { "name": "bench", "configurePreset": "bench" },
     { "name": "asan", "configurePreset": "asan" }
   ],
   "testPresets": [
     {
       "name": "debug",
       "configurePreset": "debug",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
       "output": { "outputOnFailure": true }
     },
     {

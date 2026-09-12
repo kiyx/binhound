@@ -17,7 +17,9 @@ CTestTestfile.cmake
 Testing/
 
 # IDE
-.vscode/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 .idea/
 *.swp
 *~

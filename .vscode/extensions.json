@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "ms-vscode-remote.remote-wsl",
+    "llvm-vs-code-extensions.vscode-clangd",
+    "ms-vscode.cmake-tools",
+    "twxs.cmake",
+    "ms-vscode.cpptools",
+    "EditorConfig.EditorConfig",
+    "ms-vscode.hexeditor"
+  ]
+}
