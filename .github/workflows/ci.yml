@@ -22,6 +22,27 @@ jobs:
         run: cmake --build --preset asan
       - name: Test (ASan/UBSan)
         run: ctest --preset asan
+      - name: Configure (Release, LTO, hardening)
+        run: cmake --preset release
+      - name: Build (Release)
+        run: cmake --build --preset release
+      - name: Test (Release)
+        run: ctest --preset release
+
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install clang-tidy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-tidy ninja-build
+      - name: Configure (Debug)
+        run: cmake --preset debug
+      - name: Run clang-tidy
+        run: |
+          find src tests -type f \( -name '*.cpp' -o -name '*.hpp' \) -print0 \
+            | xargs -0 clang-tidy -p build/debug --warnings-as-errors='*'
 
   format:
     runs-on: ubuntu-latest
