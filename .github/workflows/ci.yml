@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure (Debug)
+        run: cmake --preset debug
+      - name: Build (Debug)
+        run: cmake --build --preset debug
+      - name: Test (Debug)
+        run: ctest --preset debug
+      - name: Configure (ASan/UBSan)
+        run: cmake --preset asan
+      - name: Build (ASan/UBSan)
+        run: cmake --build --preset asan
+      - name: Test (ASan/UBSan)
+        run: ctest --preset asan
+
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format
+      - name: Check formatting
+        run: |
+          find src tests -type f \( -name '*.cpp' -o -name '*.hpp' \) -print0 \
+            | xargs -0 clang-format --dry-run --Werror
