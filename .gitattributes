@@ -11,5 +11,3 @@ tests/fixtures/** -text
 # Fuzzing seed corpus
 tests/fuzz/corpus/** -text
 
-# Test fixtures
-tests/fixtures/*.bin binary

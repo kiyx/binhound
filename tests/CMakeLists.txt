@@ -25,10 +25,22 @@ set_tests_properties(cli.help PROPERTIES
 add_test(NAME cli.unknown_command COMMAND binhound frobnicate)
 set_tests_properties(cli.unknown_command PROPERTIES WILL_FAIL TRUE)
 
-add_test(NAME cli.scan_minimal
-    COMMAND binhound scan "${CMAKE_CURRENT_SOURCE_DIR}/fixtures/elf64_minimal.bin")
-set_tests_properties(cli.scan_minimal PROPERTIES
-    PASS_REGULAR_EXPRESSION "Class:.*ELF64;Type:.*EXEC;Machine:.*x86-64")
+find_program(PYTHON3_EXECUTABLE python3)
+if(PYTHON3_EXECUTABLE)
+    execute_process(
+        COMMAND "${PYTHON3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/fixtures/generate_fixtures.py"
+            "${CMAKE_CURRENT_BINARY_DIR}/fixtures"
+        RESULT_VARIABLE BINHOUND_FIXTURE_RESULT)
+    if(BINHOUND_FIXTURE_RESULT EQUAL 0)
+        add_test(NAME cli.scan_minimal
+            COMMAND binhound scan "${CMAKE_CURRENT_BINARY_DIR}/fixtures/elf64_minimal.bin")
+        set_tests_properties(cli.scan_minimal PROPERTIES
+            PASS_REGULAR_EXPRESSION "Class:.*ELF64;Type:.*EXEC;Machine:.*x86-64")
+    else()
+        message(WARNING "Fixture generation failed; skipping the scan smoke test")
+    endif()
+endif()
 
 macro(binhound_expect_scan_error name fixture expected)
     add_test(NAME ${name}
