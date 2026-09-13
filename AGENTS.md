@@ -25,6 +25,8 @@ claims completeness.
 - `src/util` - file reading (`reader`), endian-aware integers (`bytes`), error type (`error`).
 - `src/parser/elf` - ELF parsing: `header` today, sections, symbols and notes later.
 - `tests/unit` - doctest unit tests. `tests/fixtures` - generated test binaries.
+- `tests/fuzz` - libFuzzer harness; the seed corpus is generated at build time
+  (`generate_corpus.py`), never committed.
 - `data/signatures` - component signature database (in progress).
 
 Targets: `binhound_core` is a static library with all logic; `binhound` is the executable;
