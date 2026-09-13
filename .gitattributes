@@ -4,3 +4,6 @@
 *.jpg binary
 *.gz binary
 *.zst binary
+
+# Binary test fixtures
+tests/fixtures/** -text

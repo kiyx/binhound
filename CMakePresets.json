@@ -1,26 +1,20 @@
 {
   "version": 6,
-  "cmakeMinimumRequired": { "major": 3, "minor": 20, "patch": 0 },
+  "cmakeMinimumRequired": { "major": 3, "minor": 28, "patch": 0 },
   "configurePresets": [
     {
       "name": "debug",
       "displayName": "Debug",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
-      }
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
     },
     {
       "name": "relwithdebinfo",
       "displayName": "RelWithDebInfo",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/relwithdebinfo",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
-      }
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo" }
     },
     {
       "name": "release",
@@ -29,7 +23,6 @@
       "binaryDir": "${sourceDir}/build/release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
         "BINHOUND_ENABLE_LTO": "ON",
         "BINHOUND_ENABLE_HARDENING": "ON"
       }
@@ -39,18 +32,14 @@
       "displayName": "Release for local benchmarks (march=native)",
       "inherits": "release",
       "binaryDir": "${sourceDir}/build/bench",
-      "cacheVariables": {
-        "BINHOUND_ENABLE_NATIVE": "ON"
-      }
+      "cacheVariables": { "BINHOUND_ENABLE_NATIVE": "ON" }
     },
     {
       "name": "asan",
       "displayName": "Debug with ASan and UBSan",
       "inherits": "debug",
       "binaryDir": "${sourceDir}/build/asan",
-      "cacheVariables": {
-        "BINHOUND_ENABLE_SANITIZERS": "ON"
-      }
+      "cacheVariables": { "BINHOUND_ENABLE_SANITIZERS": "ON" }
     },
     {
       "name": "ci",
@@ -71,9 +60,7 @@
       "architecture": "x64",
       "binaryDir": "${sourceDir}/build/ci",
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" },
-      "cacheVariables": {
-        "BINHOUND_ENABLE_LTO": "ON"
-      }
+      "cacheVariables": { "BINHOUND_ENABLE_LTO": "ON" }
     }
   ],
   "buildPresets": [
@@ -91,5 +78,31 @@
     { "name": "asan", "configurePreset": "asan", "output": { "outputOnFailure": true } },
     { "name": "ci", "configurePreset": "ci", "output": { "outputOnFailure": true } },
     { "name": "ci-msvc", "configurePreset": "ci-msvc", "configuration": "Release", "output": { "outputOnFailure": true } }
+  ],
+  "workflowPresets": [
+    {
+      "name": "debug",
+      "steps": [
+        { "type": "configure", "name": "debug" },
+        { "type": "build", "name": "debug" },
+        { "type": "test", "name": "debug" }
+      ]
+    },
+    {
+      "name": "asan",
+      "steps": [
+        { "type": "configure", "name": "asan" },
+        { "type": "build", "name": "asan" },
+        { "type": "test", "name": "asan" }
+      ]
+    },
+    {
+      "name": "ci",
+      "steps": [
+        { "type": "configure", "name": "ci" },
+        { "type": "build", "name": "ci" },
+        { "type": "test", "name": "ci" }
+      ]
+    }
   ]
 }
