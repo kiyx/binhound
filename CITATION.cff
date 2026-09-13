@@ -8,7 +8,6 @@ type: software
 authors:
   - family-names: "Esposito"
     given-names: "Giuseppe Paolo"
-    affiliation: "University of Naples Federico II"
     email: "giuseppep.esposito@studenti.unina.it"
 license: "Apache-2.0"
 repository-code: "https://github.com/kiyx/binhound"
