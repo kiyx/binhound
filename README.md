@@ -8,12 +8,15 @@
 [![CI](https://github.com/kiyx/binhound/actions/workflows/ci.yml/badge.svg)](https://github.com/kiyx/binhound/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/kiyx/binhound/actions/workflows/codeql.yml/badge.svg)](https://github.com/kiyx/binhound/actions/workflows/codeql.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](#build)
+[![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](#quick-start)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/kiyx/binhound/badge)](https://scorecard.dev/viewer/?uri=github.com/kiyx/binhound)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/14622/badge)](https://www.bestpractices.dev/projects/14622)
 
 *BinHound identifies software inside compiled binaries and proves its conclusions with machine-readable evidence.*
+
+> **Status:** v0.1 walking skeleton — ELF header analysis works today, the
+> rest is on the [Roadmap](#roadmap).
 
 English · [Italiano](README.it.md)
 
@@ -35,16 +38,18 @@ where knowing what is inside a product is a legal and practical requirement, not
 
 ## Features
 
-- **Component inventory (SBOM).** Libraries and versions detected from strings, symbols and
-  binary fingerprints.
-- **Cryptography inventory (CBOM).** Algorithms, protocols and certificates, for post-quantum
-  planning.
-- **Vulnerability matching.** Components mapped to OSV/CVE data and reported separately as VEX.
-- **Evidence and confidence everywhere.** No silent guessing: every result says why it was
-  detected and how certain it is.
-- **Coverage scorecard.** Every report states how much of the file could actually be analyzed.
-- **Standards-ready output.** CycloneDX SBOM, CBOM and VEX, plus a human-readable report.
-- **Safe by default.** The analyzed file is never executed; no network access unless requested.
+What works today:
+
+- **ELF header analysis.** Class, endianness, type, machine, entry point and
+  section count for ELF32 and ELF64, little and big endian.
+- **Safe by default.** The analyzed file is never executed; no network access
+  unless requested.
+- **Tested everywhere.** Unit and CLI tests on Linux, Windows and macOS, with
+  sanitizers, fuzzing and coverage gates.
+
+What's next (see [Roadmap](#roadmap)): component inventory (SBOM),
+cryptography inventory (CBOM), vulnerability matching with VEX, a coverage
+scorecard and CycloneDX export — every result with evidence and confidence.
 
 ## Quick start
 
@@ -101,7 +106,7 @@ binary ──► parse ──► extract evidence ──► detect ──► rep
 ```
 
 The core is a C++20 library (`binhound_core`); the command line is a thin adapter on top of it.
-Every finding carries its evidence and confidence, and every report states its coverage.
+Every finding will carry its evidence and confidence, and every report will state its coverage.
 
 ## Design principles
 
@@ -129,7 +134,7 @@ Every finding carries its evidence and confidence, and every report states its c
 - [doctest](https://github.com/doctest/doctest) - unit testing
 - [tl::expected](https://github.com/TartanLlama/expected) - error handling
 - [CMake](https://cmake.org) and [Ninja](https://ninja-build.org) - build system
-- [CycloneDX](https://cyclonedx.org) - SBOM, CBOM and VEX formats
+- [CycloneDX](https://cyclonedx.org) - target format for SBOM, CBOM and VEX output (roadmap)
 - [OpenSSF Scorecard](https://scorecard.dev) - repository security posture
 
 ## Contributors
