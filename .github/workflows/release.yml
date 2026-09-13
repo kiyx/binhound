@@ -47,6 +47,9 @@ jobs:
           path: dist/
           format: spdx-json
           output-file: sbom.spdx.json
+          # The SBOM below is uploaded once via the release step; skip the
+          # action's own release upload to avoid a duplicate asset.
+          upload-release-assets: false
       - name: Package (unix)
         if: runner.os != 'Windows'
         run: tar -czf binhound-${{ github.ref_name }}-${{ matrix.name }}.tar.gz -C dist .
@@ -73,4 +76,6 @@ jobs:
             binhound-*.zip
             sbom.spdx.json
             *.sigstore
-          generate_release_notes: true
+          # Notes are generated once: every matrix job uploads to the same
+          # release and each one would otherwise append a duplicate section.
+          generate_release_notes: ${{ matrix.name == 'linux-x86_64' }}
