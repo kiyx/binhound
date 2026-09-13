@@ -29,8 +29,13 @@ The same checks run in CI on Linux, Windows and macOS.
 
    ```bash
    cmake --workflow --preset debug
-   clang-tidy -p build/debug --warnings-as-errors='*' <changed files>
-   clang-format --dry-run --Werror <changed files>
+   cmake --build --preset debug --target check   # format, clang-tidy, tests
+   ```
+
+   To run them automatically before every push, install the hook:
+
+   ```bash
+   scripts/install-hooks.sh
    ```
 
 5. Commit with a conventional message (see [AGENTS.md](AGENTS.md)) and open a pull request.

@@ -194,3 +194,19 @@ include(CTest)
 if(BUILD_TESTING)
     add_subdirectory(tests)
 endif()
+
+if(BUILD_TESTING)
+    find_program(CLANG_TIDY_PROGRAM clang-tidy)
+    if(CLANG_FORMAT_PROGRAM AND CLANG_TIDY_PROGRAM)
+        file(GLOB_RECURSE BINHOUND_TIDY_FILES CONFIGURE_DEPENDS
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp")
+
+        add_custom_target(check
+            COMMAND "${CLANG_FORMAT_PROGRAM}" --dry-run --Werror ${BINHOUND_FORMAT_FILES}
+            COMMAND "${CLANG_TIDY_PROGRAM}" -p "${CMAKE_BINARY_DIR}" --warnings-as-errors=* ${BINHOUND_TIDY_FILES}
+            COMMAND "${CMAKE_CTEST_COMMAND}" --output-on-failure
+            DEPENDS binhound unit_tests
+            USES_TERMINAL)
+    endif()
+endif()

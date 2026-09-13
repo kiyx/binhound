@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+root="$(git rev-parse --show-toplevel)"
+cd "$root"
+
+if [ ! -d build/debug ]; then
+    cmake --preset debug >/dev/null
+fi
+
+echo "pre-push: formatting, clang-tidy and tests"
+cmake --build --preset debug --target check

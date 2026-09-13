@@ -60,9 +60,10 @@ build and pass tests at every commit.
 
 ```bash
 cmake --workflow --preset debug
-clang-tidy -p build/debug --warnings-as-errors='*' <changed files>
-clang-format --dry-run --Werror <changed files>
+cmake --build --preset debug --target check   # format, clang-tidy, tests
 ```
+
+The pre-push hook (`scripts/install-hooks.sh`) runs the same checks before every push.
 
 ## Scope discipline
 
