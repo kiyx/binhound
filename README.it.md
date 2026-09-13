@@ -1,43 +1,70 @@
-# BinHound
+<div align="center">
 
-> Analisi statica di binari compilati: inventaria i componenti software e, in seguito, la
-> crittografia e le vulnerabilita' note, con evidenza e confidenza.
-
-[English](README.md) | Italiano
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
+  <img src="assets/banner.svg" alt="BinHound" width="760">
+</picture>
 
 [![CI](https://github.com/kiyx/binhound/actions/workflows/ci.yml/badge.svg)](https://github.com/kiyx/binhound/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/kiyx/binhound/actions/workflows/codeql.yml/badge.svg)](https://github.com/kiyx/binhound/actions/workflows/codeql.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](#compilazione)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-**Stato: sviluppo iniziale.** E' implementata solo l'analisi dell'header ELF; rilevamento dei
-componenti, export SBOM e il resto sono in corso. Costruito in pubblico, un passo alla volta.
+**[Cos'e'](#cos-e) · [Funzionalita'](#funzionalita) · [Avvio rapido](#avvio-rapido) · [Uso](#uso) · [Come funziona](#come-funziona) · [Roadmap](#roadmap) · [Contribuire](#contribuire)**
 
-## Cosa fa
+</div>
 
-Dato un binario compilato, senza codice sorgente disponibile, BinHound risponde a tre domande:
+---
 
-1. **Cosa c'e' dentro?** Componenti e versioni, ognuno con evidenza e livello di confidenza.
-2. **Quale crittografia usa?** Algoritmi, protocolli e certificati (in programma).
-3. **Cosa e' pericoloso?** Vulnerabilita' note, riportate separate dall'inventario (in programma).
+## Cos'e'
 
-I risultati vengono esportati come documenti standard CycloneDX (SBOM, CBOM, VEX) piu' un report
-leggibile. Ogni report dichiara il **livello di copertura**: quanta parte del file e' stata
-davvero analizzabile.
+BinHound e' un analizzatore statico per binari compilati e firmware. Dato un file di cui non
+esiste il codice sorgente, ricostruisce l'inventario del software: quali componenti ci sono
+dentro, quali versioni sono dimostrabili, quale crittografia viene usata e quali vulnerabilita'
+note si applicano — ogni risultato con l'evidenza che lo sostiene e un livello di confidenza.
 
-## Cosa non e'
+Nasce per l'era del **Cyber Resilience Act europeo** e della **migrazione post-quantistica**,
+dove sapere cosa c'e' dentro un prodotto e' un requisito legale e pratico, non un'opzione.
 
-Non e' un antivirus, non e' uno strumento di exploitation, non e' un decompilatore. Non esegue mai
-il file analizzato e non tratta mai "nessun risultato" come "nessun rischio".
+## Funzionalita'
+
+- **Inventario dei componenti (SBOM).** Librerie e versioni rilevate da stringhe, simboli e
+  impronte binarie.
+- **Inventario crittografico (CBOM).** Algoritmi, protocolli e certificati, per il post-quantum.
+- **Confronto vulnerabilita'.** Componenti collegati ai dati OSV/CVE e riportati separatamente
+  come VEX.
+- **Evidenza e confidenza ovunque.** Niente indovinelli: ogni risultato dice perche' e' stato
+  rilevato e quanto e' certo.
+- **Scorecard di copertura.** Ogni report dichiara quanta parte del file e' stata analizzabile.
+- **Output standard.** CycloneDX SBOM, CBOM e VEX, piu' un report leggibile.
+- **Sicuro per impostazione predefinita.** Il file analizzato non viene mai eseguito; nessun
+  accesso alla rete se non richiesto.
+
+## Avvio rapido
+
+Requisiti: CMake 3.28+, Ninja, compilatore C++20 (GCC 13+ o Clang 18+).
+
+```bash
+git clone https://github.com/kiyx/binhound.git
+cd binhound
+cmake --workflow --preset debug      # configure, build e test
+```
+
+Build di release con LTO e hardening:
+
+```bash
+cmake --preset release
+cmake --build --preset release
+cmake --install build/release --prefix "$HOME/.local"
+binhound --help
+```
 
 ## Uso
 
 ```bash
 binhound scan /bin/ls
-binhound --version
-binhound --help
 ```
-
-Output attuale:
 
 ```
 File:       /bin/ls
@@ -49,64 +76,52 @@ Entry:      0x6d30
 Sections:   31
 ```
 
-Exit code: `0` successo, `2` errore.
+Exit code: `0` successo, `1` risultati, `2` errore — adatti a script e CI.
 
-## Compilazione
-
-Requisiti: CMake 3.28 o superiore, compilatore C++20 (GCC 13+, Clang 18+), Ninja.
-
-```bash
-cmake --preset debug
-cmake --build --preset debug
-ctest --preset debug
-
-cmake --preset release
-cmake --build --preset release
-cmake --install build/release --prefix "$HOME/.local"
-```
-
-Preset: `debug`, `relwithdebinfo`, `release` (LTO e hardening), `bench`, `asan`, `ci`.
-Gli stessi controlli girano in CI su Linux, Windows e macOS, con sanitizer, clang-tidy,
-clang-format, coverage e CodeQL.
-
-## Struttura
+## Come funziona
 
 ```
-binhound/
-├── src/
-│   ├── cli/          # punto di ingresso a riga di comando
-│   ├── util/         # lettura file, interi con endianness, errori
-│   └── parser/elf/   # parsing dell'header ELF
-├── tests/
-│   ├── unit/         # test unitari (doctest)
-│   └── fixtures/     # binari di prova generati
-└── data/signatures/  # firme dei componenti (in corso)
+binario ──► parsing ──► estrazione indizi ──► rilevamento ──► report
+            ELF        stringhe, simboli,     regole e       CycloneDX,
+                       Build-ID               confidenza     copertura, testo
 ```
 
-## Roadmap
-
-- **v0.1** - parsing ELF, estrazione stringhe e simboli, rilevamento a firme, SBOM CycloneDX,
-  coverage scorecard, output testuale colorato.
-- **v0.2** - inventario crittografico (CBOM), metadati Go/Rust, database firme automatico.
-- **v0.3** - confronto vulnerabilita' (OSV) e VEX.
-- **v0.4** - report di prontezza CRA.
-- **Dopo** - supporto PE e firmware, modulo sanitario (DICOM).
-
-## Contribuire
-
-Segnalazioni di bug, piccole correzioni, test e proposte di funzionalita' sono benvenuti. Apri
-una issue per discutere un'idea prima di lavorarci; vedi [CONTRIBUTING.md](CONTRIBUTING.md) per
-flusso di lavoro, gate di qualita' e convenzioni.
+Il cuore e' una libreria C++20 (`binhound_core`); la riga di comando e' solo un adattatore.
+Ogni risultato porta con se' evidenza e confidenza, e ogni report dichiara la copertura.
 
 ## Principi di progetto
 
-- **Prima l'evidenza.** Ogni risultato dice perche' e' stato rilevato e con quanta confidenza.
+- **Prima l'evidenza.** Un risultato senza evidenza non e' un risultato.
 - **Copertura onesta.** I report dichiarano cosa non e' stato analizzabile; una copertura bassa
   e' un risultato, non un fallimento.
 - **Aperto e ispezionabile.** Apache-2.0, nessuna logica di rilevamento chiusa.
-- **Sicuro per impostazione predefinita.** Nessuna esecuzione del file, nessun accesso alla rete
-  se non richiesto esplicitamente.
+- **Sicuro per impostazione predefinita.** Nessuna esecuzione, nessun accesso alla rete se non
+  richiesto.
+
+## Roadmap
+
+> **Stato: sviluppo iniziale.** Oggi funziona l'analisi dell'header ELF; rilevamento componenti
+> ed export SBOM sono il prossimo traguardo. Ogni milestone si chiude con una release taggata.
+
+| Versione | Obiettivo |
+| :--- | :--- |
+| **v0.1** | Parsing ELF, stringhe, simboli e Build-ID, rilevamento a firme, SBOM CycloneDX, scorecard di copertura |
+| v0.2 | CBOM, metadati Go/Rust, database firme automatico |
+| v0.3 | Vulnerabilita' (OSV) e VEX |
+| v0.4 | Report di prontezza CRA |
+| Dopo | Supporto PE e firmware, modulo sanitario (DICOM) |
+
+## Contribuire
+
+Segnalazioni di bug, piccole correzioni, test, documentazione e **proposte di funzionalita'**
+sono benvenuti. Apri prima una issue o una discussione; vedi [CONTRIBUTING.md](CONTRIBUTING.md)
+per flusso di lavoro e gate di qualita', e [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) per le
+regole della community.
+
+## Sicurezza
+
+Segnala le vulnerabilita' in privato; vedi [SECURITY.md](SECURITY.md).
 
 ## Licenza
 
-Apache-2.0. Vedi [LICENSE](LICENSE).
+Apache-2.0 — vedi [LICENSE](LICENSE). Se usi BinHound in un lavoro, vedi [CITATION.cff](CITATION.cff).

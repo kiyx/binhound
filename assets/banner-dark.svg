@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="190" viewBox="0 0 900 190" role="img" aria-label="BinHound - evidence-based inventory for compiled binaries">
+  <defs>
+    <linearGradient id="brand" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" fill="#e2e8f0" fill-opacity="0.20" text-anchor="middle">
+    <text x="450" y="34">7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00</text>
+    <text x="450" y="54">03 00 3e 00 01 00 00 00 30 6d 00 00 00 00 00 00</text>
+  </g>
+
+  <text x="450" y="112" text-anchor="middle" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="66" font-weight="700" letter-spacing="-1" fill="url(#brand)">BinHound</text>
+
+  <text x="450" y="146" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" fill="#94a3b8">evidence-based inventory for compiled binaries</text>
+
+  <text x="450" y="178" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" fill="#e2e8f0" fill-opacity="0.20">01100010 01101001 01101110 00101101 01101000 01101111 01110101 01101110 01100100</text>
+</svg>
