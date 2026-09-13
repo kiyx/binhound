@@ -31,6 +31,3 @@ Thumbs.db
 # Local
 .env
 *.local
-
-# Local-only files
-/notes/
