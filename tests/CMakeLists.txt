@@ -24,3 +24,8 @@ set_tests_properties(cli.help PROPERTIES
 
 add_test(NAME cli.unknown_command COMMAND binhound frobnicate)
 set_tests_properties(cli.unknown_command PROPERTIES WILL_FAIL TRUE)
+
+add_test(NAME cli.scan_minimal
+    COMMAND binhound scan "${CMAKE_CURRENT_SOURCE_DIR}/fixtures/elf64_minimal.bin")
+set_tests_properties(cli.scan_minimal PROPERTIES
+    PASS_REGULAR_EXPRESSION "Class:.*ELF64;Type:.*EXEC;Machine:.*x86-64")
