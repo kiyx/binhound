@@ -195,6 +195,22 @@ if(BUILD_TESTING)
     add_subdirectory(tests)
 endif()
 
+option(BINHOUND_BUILD_FUZZERS "Build libFuzzer harnesses (requires Clang)" OFF)
+
+if(BINHOUND_BUILD_FUZZERS)
+    add_executable(fuzz_elf_header
+        tests/fuzz/fuzz_elf_header.cpp)
+
+    target_link_libraries(fuzz_elf_header PRIVATE
+        binhound_core)
+
+    target_compile_options(fuzz_elf_header PRIVATE
+        -fsanitize=fuzzer,address
+        -fno-omit-frame-pointer)
+    target_link_options(fuzz_elf_header PRIVATE
+        -fsanitize=fuzzer,address)
+endif()
+
 if(BUILD_TESTING)
     find_program(CLANG_TIDY_PROGRAM clang-tidy)
     if(CLANG_FORMAT_PROGRAM AND CLANG_TIDY_PROGRAM)

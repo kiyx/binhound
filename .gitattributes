@@ -7,3 +7,6 @@
 
 # Binary test fixtures
 tests/fixtures/** -text
+
+# Fuzzing seed corpus
+tests/fuzz/corpus/** -text

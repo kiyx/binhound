@@ -1,0 +1,33 @@
+name: Fuzzing
+
+on:
+  pull_request:
+
+concurrency:
+  group: fuzzing-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  fuzzing:
+    name: clusterfuzzlite
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build fuzzers
+        uses: google/clusterfuzzlite/actions/build_fuzzers@884713a6c30a92e5e8544c39945cd7cb630abcd1 # v1
+        with:
+          language: c++
+          sanitizer: address
+          bad-build-check: false
+      - name: Run fuzzers
+        uses: google/clusterfuzzlite/actions/run_fuzzers@884713a6c30a92e5e8544c39945cd7cb630abcd1 # v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          language: c++
+          fuzz-seconds: 600
+          mode: 'code-change'
+          report-unreproducible-crashes: false
