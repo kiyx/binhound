@@ -12,6 +12,10 @@
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/kiyx/binhound/badge)](https://scorecard.dev/viewer/?uri=github.com/kiyx/binhound)
 
+*BinHound identifies software inside compiled binaries and proves its conclusions with machine-readable evidence.*
+
+English · [Italiano](README.it.md)
+
 **[What it is](#what-it-is) · [Features](#features) · [Quick start](#quick-start) · [Usage](#usage) · [How it works](#how-it-works) · [Roadmap](#roadmap) · [Contributors](#contributors) · [Contributing](#contributing)**
 
 </div>
