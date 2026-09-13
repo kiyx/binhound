@@ -32,6 +32,6 @@ Thumbs.db
 .env
 *.local
 
-# Internal working notes (not part of the public repository)
+# Local-only files
 /notes/
 /AGENTS.md
