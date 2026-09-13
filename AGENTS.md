@@ -12,18 +12,20 @@ claims completeness.
 
 ## Current state
 
-- Implemented: ELF header parsing (ELF32 and ELF64, little and big endian), safe file reading,
-  endian-aware integer access, the `scan` command, unit tests, and CI on Linux, Windows and macOS
-  with sanitizers, clang-tidy, clang-format, coverage and CodeQL.
-- Next: ELF sections, symbols and Build-ID; then string and symbol extraction, signature
-  detection, CycloneDX SBOM, coverage scorecard and colored text output.
+- Implemented: ELF parsing (headers, sections, symbols, notes and Build-ID for ELF32
+  and ELF64, little and big endian), format detection, safe file reading,
+  endian-aware integer access, the `scan` command with `--verbose`, unit tests, and CI on
+  Linux, Windows and macOS with sanitizers, clang-tidy, clang-format, coverage and CodeQL.
+- Next: string and symbol extraction, signature detection, CycloneDX SBOM, coverage scorecard
+  and colored text output.
 - Not implemented: component detection, SBOM export, PE support, firmware, network features.
 
 ## Layout
 
 - `src/cli` - command-line entry point and exit codes (`0` ok, `1` findings, `2` error).
 - `src/util` - file reading (`reader`), endian-aware integers (`bytes`), error type (`error`).
-- `src/parser/elf` - ELF parsing: `header` today, sections, symbols and notes later.
+- `src/parser` - format detection; `src/parser/elf` - ELF parsing: header, sections,
+  symbols, notes (Build-ID) and the `elf` orchestrator.
 - `tests/unit` - doctest unit tests. `tests/fixtures` - generated test binaries.
 - `tests/fuzz` - libFuzzer harness; the seed corpus is generated at build time
   (`generate_corpus.py`), never committed.
