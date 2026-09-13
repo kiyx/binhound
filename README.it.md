@@ -11,7 +11,7 @@
 [![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](#compilazione)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-**[Cos'e'](#cos-e) · [Funzionalita'](#funzionalita) · [Avvio rapido](#avvio-rapido) · [Uso](#uso) · [Come funziona](#come-funziona) · [Roadmap](#roadmap) · [Contribuire](#contribuire)**
+**[Cos'e'](#cose) · [Funzionalita'](#funzionalita) · [Avvio rapido](#avvio-rapido) · [Uso](#uso) · [Come funziona](#come-funziona) · [Roadmap](#roadmap) · [Contribuire](#contribuire)**
 
 </div>
 
