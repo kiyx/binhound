@@ -10,8 +10,9 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](#compilazione)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/kiyx/binhound/badge)](https://scorecard.dev/viewer/?uri=github.com/kiyx/binhound)
 
-**[Cos'e'](#cose) · [Funzionalita'](#funzionalita) · [Avvio rapido](#avvio-rapido) · [Uso](#uso) · [Come funziona](#come-funziona) · [Roadmap](#roadmap) · [Contribuire](#contribuire)**
+**[Cos'e'](#cose) · [Funzionalita'](#funzionalita) · [Avvio rapido](#avvio-rapido) · [Uso](#uso) · [Come funziona](#come-funziona) · [Roadmap](#roadmap) · [Contributors](#contributors) · [Contribuire](#contribuire)**
 
 </div>
 
@@ -62,6 +63,10 @@ binhound --help
 
 ## Uso
 
+<p align="center">
+  <img src="assets/demo.png" alt="binhound scan /bin/ls" width="820">
+</p>
+
 ```bash
 binhound scan /bin/ls
 ```
@@ -110,6 +115,24 @@ Ogni risultato porta con se' evidenza e confidenza, e ogni report dichiara la co
 | v0.3 | Vulnerabilita' (OSV) e VEX |
 | v0.4 | Report di prontezza CRA |
 | Dopo | Supporto PE e firmware, modulo sanitario (DICOM) |
+
+## Costruito con
+
+- [doctest](https://github.com/doctest/doctest) - test unitari
+- [tl::expected](https://github.com/TartanLlama/expected) - gestione errori
+- [CMake](https://cmake.org) e [Ninja](https://ninja-build.org) - sistema di build
+- [CycloneDX](https://cyclonedx.org) - formati SBOM, CBOM e VEX
+- [OpenSSF Scorecard](https://scorecard.dev) - postura di sicurezza del repository
+
+## Contributors
+
+Grazie a chiunque abbia contribuito a BinHound.
+
+<p align="center">
+  <a href="https://github.com/kiyx/binhound/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=kiyx/binhound" alt="Contributors">
+  </a>
+</p>
 
 ## Contribuire
 
