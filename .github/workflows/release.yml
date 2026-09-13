@@ -16,6 +16,8 @@ jobs:
     name: release (${{ matrix.name }})
     permissions:
       contents: write
+      id-token: write
+      attestations: write
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     strategy:
@@ -51,6 +53,12 @@ jobs:
       - name: Package (windows)
         if: runner.os == 'Windows'
         run: Compress-Archive -Path dist/* -DestinationPath binhound-${{ github.ref_name }}-${{ matrix.name }}.zip
+      - name: Attest build provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: |
+            binhound-*
+            sbom.spdx.json
       - name: Upload to release
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:

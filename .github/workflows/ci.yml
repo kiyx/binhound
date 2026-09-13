@@ -48,7 +48,7 @@ jobs:
         if: matrix.name == 'linux-clang'
         run: |
           sudo apt-get update
-          sudo apt-get install -y lld
+          sudo apt-get install -y --no-install-recommends lld
       - name: Configure
         run: cmake --preset ${{ matrix.preset }} ${{ matrix.flags }}
       - name: Build
@@ -62,6 +62,10 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
+        with:
+          key: asan-ubsan
       - name: Configure
         run: cmake --preset asan
       - name: Build
@@ -75,16 +79,18 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Pinned to the local toolchain (Clang 18): different tidy versions
+      # diagnose different things. Bump together with the toolchain.
       - name: Install clang-tidy
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang-tidy ninja-build
+          sudo apt-get install -y --no-install-recommends clang-tidy-18 ninja-build
       - name: Configure
         run: cmake --preset debug
       - name: Run clang-tidy
         run: |
           find src tests -type f \( -name '*.cpp' -o -name '*.hpp' \) -print0 \
-            | xargs -0 clang-tidy -p build/debug --warnings-as-errors='*'
+            | xargs -0 clang-tidy-18 -p build/debug --warnings-as-errors='*'
 
   format:
     name: clang-format
@@ -92,14 +98,16 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Pinned to the local toolchain (Clang 18): different format versions
+      # can disagree on formatting. Bump together with the toolchain.
       - name: Install clang-format
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang-format
+          sudo apt-get install -y --no-install-recommends clang-format-18
       - name: Check formatting
         run: |
           find src tests -type f \( -name '*.cpp' -o -name '*.hpp' \) -print0 \
-            | xargs -0 clang-format --dry-run --Werror
+            | xargs -0 clang-format-18 --dry-run --Werror
 
   coverage:
     name: coverage
@@ -110,7 +118,7 @@ jobs:
       - name: Install gcovr
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcovr ninja-build
+          sudo apt-get install -y --no-install-recommends gcovr ninja-build
       - name: Configure with coverage
         run: |
           cmake -B build/coverage -G Ninja \
@@ -122,10 +130,17 @@ jobs:
         run: ctest --test-dir build/coverage --output-on-failure
       - name: Generate coverage report
         run: |
-          gcovr -r . build/coverage --fail-under-line 85 --filter src/
-          gcovr -r . build/coverage --fail-under-line 85 --filter src/ --xml-pretty -o coverage.xml
-          gcovr -r . build/coverage --fail-under-line 85 --filter src/ --html-details -o coverage.html
+          gcovr -r . build/coverage --filter src/ \
+            --xml-pretty -o coverage.xml \
+            --html-details -o coverage.html \
+            --txt
+      - name: Enforce coverage threshold
+        # Ratchet: branch coverage measured at ~93% (Sep 2026).
+        # Raise both gates as coverage improves.
+        run: |
+          gcovr -r . build/coverage --filter src/ --fail-under-line 85 --fail-under-branch 85
       - name: Upload coverage report
+        if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: coverage-report

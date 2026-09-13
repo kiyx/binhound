@@ -28,7 +28,6 @@ jobs:
         with:
           language: c++
           sanitizer: address
-          bad-build-check: false
       - name: Run fuzzers
         uses: google/clusterfuzzlite/actions/run_fuzzers@884713a6c30a92e5e8544c39945cd7cb630abcd1 # v1
         with:

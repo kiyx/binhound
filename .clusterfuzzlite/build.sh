@@ -1,16 +1,22 @@
 #!/bin/bash -eu
-# Configure once so FetchContent provides the pinned header-only dependencies.
-cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTING=OFF >/dev/null
+# Keep -std=c++20 in sync with CMAKE_CXX_STANDARD in CMakeLists.txt.
+# NOTE: src/cli/main.cpp is intentionally excluded (libFuzzer provides main),
+# so keep this list explicit: globbing src/ would break the build.
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTING=OFF
 
-$CXX $CXXFLAGS -std=c++20 \
-  -I$SRC/binhound/src \
-  -I$SRC/binhound/build/_deps/tl_expected-src/include \
-  $SRC/binhound/tests/fuzz/fuzz_elf_header.cpp \
-  $SRC/binhound/src/util/error.cpp \
-  $SRC/binhound/src/util/reader.cpp \
-  $SRC/binhound/src/util/bytes.cpp \
-  $SRC/binhound/src/parser/elf/header.cpp \
-  -o $OUT/fuzz_elf_header \
+"$CXX" $CXXFLAGS -std=c++20 \
+  "-I$SRC/binhound/src" \
+  "-I$SRC/binhound/build/_deps/tl_expected-src/include" \
+  "$SRC/binhound/tests/fuzz/fuzz_elf_header.cpp" \
+  "$SRC/binhound/src/util/error.cpp" \
+  "$SRC/binhound/src/util/reader.cpp" \
+  "$SRC/binhound/src/util/bytes.cpp" \
+  "$SRC/binhound/src/parser/elf/header.cpp" \
+  -o "$OUT/fuzz_elf_header" \
   $LIB_FUZZING_ENGINE
 
-zip -j $OUT/fuzz_elf_header_seed_corpus.zip $SRC/binhound/tests/fuzz/corpus/*
+if compgen -G "$SRC/binhound/tests/fuzz/corpus/*" > /dev/null; then
+  zip -j "$OUT/fuzz_elf_header_seed_corpus.zip" "$SRC"/binhound/tests/fuzz/corpus/*
+else
+  echo "warning: fuzz seed corpus is empty, skipping zip" >&2
+fi
