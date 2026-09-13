@@ -71,6 +71,9 @@ binhound --help
 binhound scan /bin/ls
 ```
 
+<details>
+<summary>Output testuale</summary>
+
 ```
 File:       /bin/ls
 Class:      ELF64
@@ -80,6 +83,8 @@ Machine:    x86-64
 Entry:      0x6d30
 Sections:   31
 ```
+
+</details>
 
 Exit code: `0` successo, `1` risultati, `2` errore — adatti a script e CI.
 
