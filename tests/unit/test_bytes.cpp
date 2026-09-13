@@ -42,6 +42,8 @@ TEST_CASE("bytes: out of bounds reads")
     CHECK_FALSE(binhound::readU16(data, 3, Endian::Little).has_value());
     CHECK_FALSE(binhound::readU32(data, 1, Endian::Little).has_value());
     CHECK_FALSE(binhound::readU64(data, 0, Endian::Little).has_value());
+    CHECK_FALSE(binhound::readU16(data, 5, Endian::Big).has_value());
+    CHECK_FALSE(binhound::readU32(data, 9, Endian::Big).has_value());
     CHECK(binhound::readU32(data, 0, Endian::Little).has_value());
 }
 

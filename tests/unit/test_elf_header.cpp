@@ -206,6 +206,16 @@ TEST_CASE("elf header: truncated ELF64 header")
           Error::Code::Truncated);
 }
 
+TEST_CASE("elf header: truncated ELF32 header")
+{
+    const auto data = makeElf32(true);
+
+    CHECK(binhound::parseElfHeader(std::span<const std::byte>(data).first(51)).error().code ==
+          Error::Code::Truncated);
+    CHECK(binhound::parseElfHeader(std::span<const std::byte>(data).first(20)).error().code ==
+          Error::Code::Truncated);
+}
+
 TEST_CASE("elf header: all machine and type names")
 {
     CHECK(binhound::machineName(0x03) == "x86");

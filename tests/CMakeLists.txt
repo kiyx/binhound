@@ -22,6 +22,10 @@ add_test(NAME cli.help COMMAND binhound --help)
 set_tests_properties(cli.help PROPERTIES
     PASS_REGULAR_EXPRESSION "Usage:")
 
+add_test(NAME cli.no_args COMMAND binhound)
+set_tests_properties(cli.no_args PROPERTIES
+    PASS_REGULAR_EXPRESSION "Usage:")
+
 add_test(NAME cli.unknown_command COMMAND binhound frobnicate)
 set_tests_properties(cli.unknown_command PROPERTIES WILL_FAIL TRUE)
 

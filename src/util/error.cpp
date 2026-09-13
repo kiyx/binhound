@@ -5,7 +5,9 @@ namespace binhound
 
 std::string_view errorCodeName(Error::Code code) noexcept
 {
-    switch(code)
+    // Exhaustive over Error::Code: every enumerator is handled and tested, so
+    // the switch fallthrough arc is unreachable.
+    switch(code) // GCOV_EXCL_BR_LINE
     {
     case Error::Code::FileNotFound:
         return "FileNotFound";
@@ -24,7 +26,8 @@ std::string_view errorCodeName(Error::Code code) noexcept
     case Error::Code::DatabaseMissing:
         return "DatabaseMissing";
     }
-    return "Unknown";
+    // Unreachable: every enumerator is handled above; kept for -Wreturn-type.
+    return "Unknown"; // GCOV_EXCL_LINE
 }
 
 } // namespace binhound

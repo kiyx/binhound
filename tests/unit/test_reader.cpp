@@ -121,3 +121,31 @@ TEST_CASE("reader: elf magic")
     CHECK_FALSE(binhound::hasElfMagic(other));
     CHECK_FALSE(binhound::hasElfMagic(std::span<const std::byte>(elf).first(2)));
 }
+
+TEST_CASE("reader: unreadable file")
+{
+    const TempFile file("unreadable");
+    const std::array<std::byte, 4> content{std::byte{0x7F}, std::byte{'E'}, std::byte{'L'},
+                                           std::byte{'F'}};
+    file.write(content);
+
+    std::error_code ec;
+    std::filesystem::permissions(file.path(),
+                                 std::filesystem::perms::owner_read |
+                                     std::filesystem::perms::group_read |
+                                     std::filesystem::perms::others_read,
+                                 std::filesystem::perm_options::remove, ec);
+    REQUIRE_FALSE(ec);
+
+    // Privileged processes (e.g. running as root) bypass file permissions.
+    const std::ifstream probe(file.path(), std::ios::binary);
+    if(probe)
+    {
+        MESSAGE("skipped: process can read permission-restricted files");
+        return;
+    }
+
+    const auto result = binhound::readFile(file.path());
+    REQUIRE_FALSE(result.has_value());
+    CHECK(result.error().code == binhound::Error::Code::ReadFailed);
+}

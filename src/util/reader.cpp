@@ -32,11 +32,15 @@ Result<FileData> readFile(const std::filesystem::path& path, std::size_t maxByte
     }
 
     const auto size = std::filesystem::file_size(path, ec);
+    // TOCTOU race: the file can vanish between the two checks above.
+    // Not deterministically testable.
+    // GCOV_EXCL_START
     if(ec)
     {
         return tl::unexpected(
             makeError(Error::Code::ReadFailed, "cannot read the size of: " + path.string()));
     }
+    // GCOV_EXCL_STOP
 
     if(size > static_cast<std::uintmax_t>(maxBytes))
     {
@@ -55,11 +59,15 @@ Result<FileData> readFile(const std::filesystem::path& path, std::size_t maxByte
     {
         stream.read(reinterpret_cast<char*>(bytes.data()),
                     static_cast<std::streamsize>(bytes.size()));
+        // TOCTOU race: the file can shrink between the size check and the read.
+        // Not deterministically testable.
+        // GCOV_EXCL_START
         if(!stream || stream.gcount() != static_cast<std::streamsize>(bytes.size()))
         {
             return tl::unexpected(
                 makeError(Error::Code::ReadFailed, "short read on: " + path.string()));
         }
+        // GCOV_EXCL_STOP
     }
 
     return FileData{path, std::move(bytes)};
