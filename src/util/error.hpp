@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <string_view>
 
@@ -10,7 +11,7 @@ namespace binhound
 
 struct Error
 {
-    enum class Code
+    enum class Code : std::uint8_t
     {
         FileNotFound,
         FileTooLarge,

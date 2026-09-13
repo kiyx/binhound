@@ -35,6 +35,7 @@ set(EXPECTED_BUILD_PACKAGE OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(tl_expected
     GIT_REPOSITORY https://github.com/TartanLlama/expected.git
     GIT_TAG v1.3.1
+    SYSTEM
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(tl_expected)
 
@@ -45,6 +46,7 @@ set(DOCTEST_NO_INSTALL ON CACHE BOOL "" FORCE)
 FetchContent_Declare(doctest
     GIT_REPOSITORY https://github.com/doctest/doctest.git
     GIT_TAG v2.5.3
+    SYSTEM
     EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(doctest)
 
