@@ -2,6 +2,9 @@ name: Fuzzing
 
 on:
   pull_request:
+  schedule:
+    - cron: '0 4 * * 0'
+  workflow_dispatch:
 
 concurrency:
   group: fuzzing-${{ github.ref }}
@@ -14,7 +17,10 @@ jobs:
   fuzzing:
     name: clusterfuzzlite
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 120
+    permissions:
+      contents: read
+      issues: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Build fuzzers
@@ -28,6 +34,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           language: c++
-          fuzz-seconds: 600
-          mode: 'code-change'
+          fuzz-seconds: ${{ github.event_name == 'schedule' && 3600 || 600 }}
+          mode: ${{ github.event_name == 'schedule' && 'batch' || 'code-change' }}
           report-unreproducible-crashes: false
