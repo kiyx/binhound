@@ -15,7 +15,7 @@ claims completeness.
 - Implemented: ELF header parsing (ELF32 and ELF64, little and big endian), safe file reading,
   endian-aware integer access, the `scan` command, unit tests, and CI on Linux, Windows and macOS
   with sanitizers, clang-tidy, clang-format, coverage and CodeQL.
-- In progress: ELF sections, symbols and Build-ID; then string and symbol extraction, signature
+- Next: ELF sections, symbols and Build-ID; then string and symbol extraction, signature
   detection, CycloneDX SBOM, coverage scorecard and colored text output.
 - Not implemented: component detection, SBOM export, PE support, firmware, network features.
 
