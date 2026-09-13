@@ -54,15 +54,23 @@ jobs:
         if: runner.os == 'Windows'
         run: Compress-Archive -Path dist/* -DestinationPath binhound-${{ github.ref_name }}-${{ matrix.name }}.zip
       - name: Attest build provenance
+        id: attest
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
           subject-path: |
             binhound-*
             sbom.spdx.json
+      - name: Save attestation bundle
+        # The bundle lets verifiers (and Scorecard's Signed-Releases check)
+        # validate provenance offline, straight from the release assets.
+        shell: bash
+        run: cp "${{ steps.attest.outputs.bundle-path }}" "binhound-${{ github.ref_name }}-${{ matrix.name }}.sigstore"
       - name: Upload to release
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           files: |
-            binhound-*
+            binhound-*.tar.gz
+            binhound-*.zip
             sbom.spdx.json
+            *.sigstore
           generate_release_notes: true
