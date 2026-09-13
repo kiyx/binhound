@@ -1,4 +1,4 @@
-#include <doctest/doctest.h>
+#include "doctest.hpp"
 
 #include <array>
 #include <cstddef>
