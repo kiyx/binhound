@@ -11,6 +11,7 @@
 [![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](#compilazione)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/kiyx/binhound/badge)](https://scorecard.dev/viewer/?uri=github.com/kiyx/binhound)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/14622/badge)](https://www.bestpractices.dev/projects/14622)
 
 *BinHound identifica il software dentro i binari compilati e dimostra le conclusioni con evidenze leggibili dalle macchine.*
 
