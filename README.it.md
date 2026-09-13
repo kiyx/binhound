@@ -92,6 +92,12 @@ binhound/
 - **v0.4** - report di prontezza CRA.
 - **Dopo** - supporto PE e firmware, modulo sanitario (DICOM).
 
+## Contribuire
+
+Segnalazioni di bug, piccole correzioni, test e proposte di funzionalita' sono benvenuti. Apri
+una issue per discutere un'idea prima di lavorarci; vedi [CONTRIBUTING.md](CONTRIBUTING.md) per
+flusso di lavoro, gate di qualita' e convenzioni.
+
 ## Principi di progetto
 
 - **Prima l'evidenza.** Ogni risultato dice perche' e' stato rilevato e con quanta confidenza.

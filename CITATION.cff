@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using these metadata."
+title: "BinHound"
+abstract: >-
+  Static analysis of compiled binaries: it inventories the bundled software components,
+  reporting evidence and confidence, towards SBOM and CBOM documents and CRA compliance.
+type: software
+authors:
+  - family-names: "Esposito"
+    given-names: "Giuseppe Paolo"
+    affiliation: "University of Naples Federico II"
+    email: "giuseppep.esposito@studenti.unina.it"
+license: "Apache-2.0"
+repository-code: "https://github.com/kiyx/binhound"
+url: "https://github.com/kiyx/binhound"
+keywords:
+  - "binary analysis"
+  - "sbom"
+  - "cbom"
+  - "software composition analysis"
+  - "cyber resilience act"
+  - "firmware"

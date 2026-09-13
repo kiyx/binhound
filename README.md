@@ -91,6 +91,12 @@ binhound/
 - **v0.4** - CRA readiness report.
 - **Later** - PE and firmware support, medical (DICOM) module.
 
+## Contributing
+
+Bug reports, small fixes, tests and feature proposals are welcome. Open an issue to discuss an
+idea before working on it, and see [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow, the
+quality gates and the conventions.
+
 ## Design principles
 
 - **Evidence first.** Every finding states why it was detected and how confident we are.
