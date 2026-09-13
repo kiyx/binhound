@@ -29,6 +29,7 @@ jobs:
         with:
           languages: c-cpp
           build-mode: manual
+          config-file: ./.github/codeql/codeql-config.yml
       - name: Configure
         run: cmake --preset debug
       - name: Build

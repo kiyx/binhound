@@ -1,0 +1,3 @@
+name: BinHound CodeQL configuration
+paths-ignore:
+  - build/**
