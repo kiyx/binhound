@@ -56,8 +56,6 @@
     {
       "name": "ci-msvc",
       "displayName": "CI (MSVC, Windows)",
-      "generator": "Visual Studio 17 2022",
-      "architecture": "x64",
       "binaryDir": "${sourceDir}/build/ci",
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" },
       "cacheVariables": { "BINHOUND_ENABLE_LTO": "ON" }
