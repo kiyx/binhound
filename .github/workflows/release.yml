@@ -39,6 +39,12 @@ jobs:
         run: cmake --build --preset ${{ matrix.preset }}
       - name: Install
         run: cmake --install build/ci --config Release --prefix dist
+      - name: Generate SBOM
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0
+        with:
+          path: dist/
+          format: spdx-json
+          output-file: sbom.spdx.json
       - name: Package (unix)
         if: runner.os != 'Windows'
         run: tar -czf binhound-${{ github.ref_name }}-${{ matrix.name }}.tar.gz -C dist .
@@ -48,5 +54,7 @@ jobs:
       - name: Upload to release
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
-          files: binhound-*
+          files: |
+            binhound-*
+            sbom.spdx.json
           generate_release_notes: true
