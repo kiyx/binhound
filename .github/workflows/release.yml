@@ -50,6 +50,11 @@ jobs:
           # The SBOM below is uploaded once via the release step; skip the
           # action's own release upload to avoid a duplicate asset.
           upload-release-assets: false
+      - name: Rename SBOM per platform
+        # One SBOM per platform artifact: identical basenames would collide
+        # when the provenance job merges them, and the release stays explicit.
+        shell: bash
+        run: mv sbom.spdx.json "sbom-${{ matrix.name }}.spdx.json"
       - name: Package (unix)
         if: runner.os != 'Windows'
         run: tar -czf binhound-${{ github.ref_name }}-${{ matrix.name }}.tar.gz -C dist .
@@ -61,8 +66,9 @@ jobs:
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
           subject-path: |
-            binhound-*
-            sbom.spdx.json
+            binhound-*.tar.gz
+            binhound-*.zip
+            sbom-*.spdx.json
       - name: Save attestation bundle
         # The bundle lets verifiers (and Scorecard's Signed-Releases check)
         # validate provenance offline, straight from the release assets.
@@ -74,8 +80,55 @@ jobs:
           files: |
             binhound-*.tar.gz
             binhound-*.zip
-            sbom.spdx.json
+            sbom-*.spdx.json
             *.sigstore
           # Notes are generated once: every matrix job uploads to the same
           # release and each one would otherwise append a duplicate section.
           generate_release_notes: ${{ matrix.name == 'linux-x86_64' }}
+      - name: Upload artifacts for provenance
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-files-${{ matrix.name }}
+          path: |
+            binhound-*.tar.gz
+            binhound-*.zip
+            sbom-*.spdx.json
+            *.sigstore
+          if-no-files-found: error
+          retention-days: 1
+
+  hashes:
+    name: hash artifacts
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      subjects: ${{ steps.hash.outputs.subjects }}
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: release-files-*
+          merge-multiple: true
+          path: slsa-subjects
+      - name: Compute subjects
+        id: hash
+        shell: bash
+        run: |
+          cd slsa-subjects
+          echo "subjects=$(sha256sum ./* | base64 -w0)" >> "$GITHUB_OUTPUT"
+
+  provenance:
+    name: slsa-provenance
+    needs: hashes
+    permissions:
+      actions: read
+      id-token: write
+      contents: write
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@f7dd8c54c2067bafc12ca7a55595d5ee9b75204a # v2.1.0
+    with:
+      base64-subjects: ${{ needs.hashes.outputs.subjects }}
+      upload-assets: true
