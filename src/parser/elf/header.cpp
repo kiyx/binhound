@@ -43,7 +43,7 @@ constexpr std::size_t kElf64ShStrIndex = 62;
 
 Error makeError(Error::Code code, std::string message)
 {
-    return Error{code, std::move(message)};
+    return Error{.code = code, .message = std::move(message)};
 }
 
 std::optional<Endian> endianFromByte(std::uint8_t value) noexcept
