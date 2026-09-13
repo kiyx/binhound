@@ -15,11 +15,6 @@ namespace
 constexpr std::array<std::byte, 4> kElfMagic = {std::byte{0x7F}, std::byte{'E'}, std::byte{'L'},
                                                 std::byte{'F'}};
 
-Error makeError(Error::Code code, std::string message)
-{
-    return Error{code, std::move(message)};
-}
-
 } // namespace
 
 Result<FileData> readFile(const std::filesystem::path& path, std::size_t maxBytes)

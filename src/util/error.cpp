@@ -5,8 +5,7 @@ namespace binhound
 
 std::string_view errorCodeName(Error::Code code) noexcept
 {
-    // Exhaustive over Error::Code: every enumerator is handled and tested, so
-    // the switch fallthrough arc is unreachable.
+    // Exhaustive over Error::Code: the switch fallthrough arc is unreachable.
     switch(code) // GCOV_EXCL_BR_LINE
     {
     case Error::Code::FileNotFound:
@@ -23,10 +22,15 @@ std::string_view errorCodeName(Error::Code code) noexcept
         return "BadEndianness";
     case Error::Code::UnsupportedClass:
         return "UnsupportedClass";
+    case Error::Code::BadSection:
+        return "BadSection";
+    case Error::Code::BadSymbol:
+        return "BadSymbol";
+    case Error::Code::BadNote:
+        return "BadNote";
     case Error::Code::DatabaseMissing:
         return "DatabaseMissing";
     }
-    // Unreachable: every enumerator is handled above; kept for -Wreturn-type.
     return "Unknown"; // GCOV_EXCL_LINE
 }
 

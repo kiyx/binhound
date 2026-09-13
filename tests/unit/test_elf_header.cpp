@@ -75,6 +75,7 @@ std::array<std::byte, kElf64Size> makeElf64(bool little)
     put64(data, 40, 0x22428, little);
     put16(data, 52, 64, little);
     put16(data, 56, 13, little);
+    put16(data, 58, 64, little);
     put16(data, 60, 31, little);
     put16(data, 62, 30, little);
     return data;
@@ -97,6 +98,7 @@ std::array<std::byte, kElf32Size> makeElf32(bool little)
     put32(data, 32, 0x2000, little);
     put16(data, 40, 52, little);
     put16(data, 44, 8, little);
+    put16(data, 46, 40, little);
     put16(data, 48, 25, little);
     put16(data, 50, 24, little);
     return data;
@@ -121,6 +123,7 @@ TEST_CASE("elf header: parses ELF64 little endian")
     CHECK(header->sectionHeaderCount == 31);
     CHECK(header->sectionNameIndex == 30);
     CHECK(header->headerSize == 64);
+    CHECK(header->sectionHeaderEntrySize == 64);
 }
 
 TEST_CASE("elf header: parses ELF64 big endian")
@@ -146,6 +149,7 @@ TEST_CASE("elf header: parses ELF32")
     CHECK(header->sectionHeaderCount == 25);
     CHECK(header->sectionHeaderOffset == 0x2000);
     CHECK(header->headerSize == 52);
+    CHECK(header->sectionHeaderEntrySize == 40);
     CHECK(binhound::machineName(header->machine) == "ARM");
     CHECK(binhound::typeName(header->type) == "EXEC");
 }

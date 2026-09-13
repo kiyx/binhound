@@ -32,4 +32,7 @@ TEST_CASE("error: all code names")
     CHECK(binhound::errorCodeName(binhound::Error::Code::Truncated) == "Truncated");
     CHECK(binhound::errorCodeName(binhound::Error::Code::BadEndianness) == "BadEndianness");
     CHECK(binhound::errorCodeName(binhound::Error::Code::UnsupportedClass) == "UnsupportedClass");
+    CHECK(binhound::errorCodeName(binhound::Error::Code::BadSection) == "BadSection");
+    CHECK(binhound::errorCodeName(binhound::Error::Code::BadSymbol) == "BadSymbol");
+    CHECK(binhound::errorCodeName(binhound::Error::Code::BadNote) == "BadNote");
 }

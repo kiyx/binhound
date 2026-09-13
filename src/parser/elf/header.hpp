@@ -24,6 +24,9 @@ struct ElfHeader
     std::uint16_t sectionHeaderCount = 0;
     std::uint16_t sectionNameIndex = 0;
     std::uint16_t headerSize = 0;
+    // Raw e_shentsize: entry size of the section header table (40 or 64).
+    // parseSections validates it before reading the table.
+    std::uint16_t sectionHeaderEntrySize = 0;
 };
 
 [[nodiscard]] Result<ElfHeader> parseElfHeader(std::span<const std::byte> data);

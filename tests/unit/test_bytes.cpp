@@ -55,3 +55,29 @@ TEST_CASE("bytes: toHex")
     CHECK(binhound::toHex(data) == "deadbeef");
     CHECK(binhound::toHex(std::span<const std::byte>{}).empty());
 }
+
+TEST_CASE("bytes: fits in file")
+{
+    const std::array<std::byte, 4> data{};
+
+    CHECK(binhound::fitsInFile(data, 0, 4));
+    CHECK(binhound::fitsInFile(data, 4, 0));
+    CHECK_FALSE(binhound::fitsInFile(data, 5, 0));
+    CHECK_FALSE(binhound::fitsInFile(data, 3, 2));
+    CHECK_FALSE(binhound::fitsInFile(data, 0, 5));
+    CHECK_FALSE(binhound::fitsInFile(data, 0xFFFFFFFFFFFFFFFFU, 0xFFFFFFFFFFFFFFFFU));
+}
+
+TEST_CASE("bytes: c strings")
+{
+    const std::array<std::byte, 6> data{std::byte{'h'}, std::byte{'i'}, std::byte{0},
+                                        std::byte{'x'}, std::byte{0},   std::byte{0}};
+    const std::array<std::byte, 3> bare{std::byte{'a'}, std::byte{'b'}, std::byte{'c'}};
+
+    CHECK(binhound::readCString(data, 0) == "hi");
+    CHECK(binhound::readCString(data, 3) == "x");
+    CHECK_FALSE(binhound::readCString(data, 6).has_value());
+    CHECK_FALSE(binhound::readCString(data, 9).has_value());
+    CHECK_FALSE(binhound::readCString(bare, 0).has_value());
+    CHECK_FALSE(binhound::readCString(std::span<const std::byte>{}, 0).has_value());
+}

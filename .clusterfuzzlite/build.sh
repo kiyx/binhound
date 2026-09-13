@@ -17,6 +17,11 @@ python3 "$SRC/binhound/tests/fuzz/generate_corpus.py" "$SRC/seed-corpus"
   "$SRC/binhound/src/util/reader.cpp" \
   "$SRC/binhound/src/util/bytes.cpp" \
   "$SRC/binhound/src/parser/elf/header.cpp" \
+  "$SRC/binhound/src/parser/format.cpp" \
+  "$SRC/binhound/src/parser/elf/sections.cpp" \
+  "$SRC/binhound/src/parser/elf/symbols.cpp" \
+  "$SRC/binhound/src/parser/elf/notes.cpp" \
+  "$SRC/binhound/src/parser/elf/elf.cpp" \
   -o "$OUT/fuzz_elf_header" \
   $LIB_FUZZING_ENGINE
 

@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include <tl/expected.hpp>
 
@@ -20,12 +21,20 @@ struct Error
         Truncated,
         BadEndianness,
         UnsupportedClass,
+        BadSection,
+        BadSymbol,
+        BadNote,
         DatabaseMissing
     };
 
     Code code;
     std::string message;
 };
+
+[[nodiscard]] inline Error makeError(Error::Code code, std::string message)
+{
+    return Error{.code = code, .message = std::move(message)};
+}
 
 [[nodiscard]] std::string_view errorCodeName(Error::Code code) noexcept;
 

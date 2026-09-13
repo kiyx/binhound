@@ -28,6 +28,7 @@ constexpr std::size_t kElf32ShOffset = 32;
 constexpr std::size_t kElf32EhSize = 40;
 constexpr std::size_t kElf32PhCount = 44;
 constexpr std::size_t kElf32ShCount = 48;
+constexpr std::size_t kElf32ShEntSize = 46;
 constexpr std::size_t kElf32ShStrIndex = 50;
 
 constexpr std::size_t kElf64HeaderSize = 64;
@@ -40,11 +41,7 @@ constexpr std::size_t kElf64EhSize = 52;
 constexpr std::size_t kElf64PhCount = 56;
 constexpr std::size_t kElf64ShCount = 60;
 constexpr std::size_t kElf64ShStrIndex = 62;
-
-Error makeError(Error::Code code, std::string message)
-{
-    return Error{.code = code, .message = std::move(message)};
-}
+constexpr std::size_t kElf64ShEntSize = 58;
 
 std::optional<Endian> endianFromByte(std::uint8_t value) noexcept
 {
@@ -59,21 +56,6 @@ std::optional<Endian> endianFromByte(std::uint8_t value) noexcept
     return std::nullopt;
 }
 
-std::uint16_t u16At(std::span<const std::byte> data, std::size_t offset, Endian endian) noexcept
-{
-    return readU16(data, offset, endian).value_or(0);
-}
-
-std::uint32_t u32At(std::span<const std::byte> data, std::size_t offset, Endian endian) noexcept
-{
-    return readU32(data, offset, endian).value_or(0);
-}
-
-std::uint64_t u64At(std::span<const std::byte> data, std::size_t offset, Endian endian) noexcept
-{
-    return readU64(data, offset, endian).value_or(0);
-}
-
 Result<ElfHeader> parseElf32(std::span<const std::byte> data, Endian endian)
 {
     if(data.size() < kElf32HeaderSize)
@@ -84,15 +66,16 @@ Result<ElfHeader> parseElf32(std::span<const std::byte> data, Endian endian)
     return ElfHeader{
         .is64Bit = false,
         .endian = endian,
-        .type = u16At(data, kElf32Type, endian),
-        .machine = u16At(data, kElf32Machine, endian),
-        .entry = u32At(data, kElf32Entry, endian),
-        .programHeaderOffset = u32At(data, kElf32PhOffset, endian),
-        .sectionHeaderOffset = u32At(data, kElf32ShOffset, endian),
-        .programHeaderCount = u16At(data, kElf32PhCount, endian),
-        .sectionHeaderCount = u16At(data, kElf32ShCount, endian),
-        .sectionNameIndex = u16At(data, kElf32ShStrIndex, endian),
-        .headerSize = u16At(data, kElf32EhSize, endian),
+        .type = readU16Or(data, kElf32Type, endian),
+        .machine = readU16Or(data, kElf32Machine, endian),
+        .entry = readU32Or(data, kElf32Entry, endian),
+        .programHeaderOffset = readU32Or(data, kElf32PhOffset, endian),
+        .sectionHeaderOffset = readU32Or(data, kElf32ShOffset, endian),
+        .programHeaderCount = readU16Or(data, kElf32PhCount, endian),
+        .sectionHeaderCount = readU16Or(data, kElf32ShCount, endian),
+        .sectionNameIndex = readU16Or(data, kElf32ShStrIndex, endian),
+        .headerSize = readU16Or(data, kElf32EhSize, endian),
+        .sectionHeaderEntrySize = readU16Or(data, kElf32ShEntSize, endian),
     };
 }
 
@@ -106,15 +89,16 @@ Result<ElfHeader> parseElf64(std::span<const std::byte> data, Endian endian)
     return ElfHeader{
         .is64Bit = true,
         .endian = endian,
-        .type = u16At(data, kElf64Type, endian),
-        .machine = u16At(data, kElf64Machine, endian),
-        .entry = u64At(data, kElf64Entry, endian),
-        .programHeaderOffset = u64At(data, kElf64PhOffset, endian),
-        .sectionHeaderOffset = u64At(data, kElf64ShOffset, endian),
-        .programHeaderCount = u16At(data, kElf64PhCount, endian),
-        .sectionHeaderCount = u16At(data, kElf64ShCount, endian),
-        .sectionNameIndex = u16At(data, kElf64ShStrIndex, endian),
-        .headerSize = u16At(data, kElf64EhSize, endian),
+        .type = readU16Or(data, kElf64Type, endian),
+        .machine = readU16Or(data, kElf64Machine, endian),
+        .entry = readU64Or(data, kElf64Entry, endian),
+        .programHeaderOffset = readU64Or(data, kElf64PhOffset, endian),
+        .sectionHeaderOffset = readU64Or(data, kElf64ShOffset, endian),
+        .programHeaderCount = readU16Or(data, kElf64PhCount, endian),
+        .sectionHeaderCount = readU16Or(data, kElf64ShCount, endian),
+        .sectionNameIndex = readU16Or(data, kElf64ShStrIndex, endian),
+        .headerSize = readU16Or(data, kElf64EhSize, endian),
+        .sectionHeaderEntrySize = readU16Or(data, kElf64ShEntSize, endian),
     };
 }
 

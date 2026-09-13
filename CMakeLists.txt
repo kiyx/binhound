@@ -116,13 +116,23 @@ set(BINHOUND_CORE_SOURCES
     src/util/error.cpp
     src/util/reader.cpp
     src/util/bytes.cpp
-    src/parser/elf/header.cpp)
+    src/parser/format.cpp
+    src/parser/elf/header.cpp
+    src/parser/elf/sections.cpp
+    src/parser/elf/symbols.cpp
+    src/parser/elf/notes.cpp
+    src/parser/elf/elf.cpp)
 
 set(BINHOUND_CORE_HEADERS
     src/util/error.hpp
     src/util/reader.hpp
     src/util/bytes.hpp
-    src/parser/elf/header.hpp)
+    src/parser/format.hpp
+    src/parser/elf/header.hpp
+    src/parser/elf/sections.hpp
+    src/parser/elf/symbols.hpp
+    src/parser/elf/notes.hpp
+    src/parser/elf/elf.hpp)
 
 add_library(binhound_core STATIC
     ${BINHOUND_CORE_SOURCES})
