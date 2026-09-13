@@ -24,3 +24,12 @@ TEST_CASE("result: carries value or error")
     CHECK(bad.error().code == Error::Code::ReadFailed);
     CHECK(bad.error().message == "boom");
 }
+
+TEST_CASE("error: all code names")
+{
+    CHECK(binhound::errorCodeName(binhound::Error::Code::FileTooLarge) == "FileTooLarge");
+    CHECK(binhound::errorCodeName(binhound::Error::Code::ReadFailed) == "ReadFailed");
+    CHECK(binhound::errorCodeName(binhound::Error::Code::Truncated) == "Truncated");
+    CHECK(binhound::errorCodeName(binhound::Error::Code::BadEndianness) == "BadEndianness");
+    CHECK(binhound::errorCodeName(binhound::Error::Code::UnsupportedClass) == "UnsupportedClass");
+}

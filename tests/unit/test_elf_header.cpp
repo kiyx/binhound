@@ -31,6 +31,24 @@ void put16(std::span<std::byte> data, std::size_t offset, std::uint16_t value, b
     }
 }
 
+void put32(std::span<std::byte> data, std::size_t offset, std::uint32_t value, bool little)
+{
+    if(little)
+    {
+        data[offset] = static_cast<std::byte>(value & 0xFFU);
+        data[offset + 1] = static_cast<std::byte>((value >> 8U) & 0xFFU);
+        data[offset + 2] = static_cast<std::byte>((value >> 16U) & 0xFFU);
+        data[offset + 3] = static_cast<std::byte>((value >> 24U) & 0xFFU);
+    }
+    else
+    {
+        data[offset] = static_cast<std::byte>((value >> 24U) & 0xFFU);
+        data[offset + 1] = static_cast<std::byte>((value >> 16U) & 0xFFU);
+        data[offset + 2] = static_cast<std::byte>((value >> 8U) & 0xFFU);
+        data[offset + 3] = static_cast<std::byte>(value & 0xFFU);
+    }
+}
+
 void put64(std::span<std::byte> data, std::size_t offset, std::uint64_t value, bool little)
 {
     for(std::size_t i = 0; i < 8; ++i)
@@ -74,10 +92,9 @@ std::array<std::byte, kElf32Size> makeElf32(bool little)
 
     put16(data, 16, 2, little);
     put16(data, 18, 0x28, little);
-    put16(data, 24, 0x8000, little);
-    put16(data, 26, 0, little);
-    put16(data, 28, 52, little);
-    put16(data, 30, 0, little);
+    put32(data, 24, 0x8000, little);
+    put32(data, 28, 52, little);
+    put32(data, 32, 0x2000, little);
     put16(data, 40, 52, little);
     put16(data, 44, 8, little);
     put16(data, 48, 25, little);
@@ -127,6 +144,8 @@ TEST_CASE("elf header: parses ELF32")
     CHECK(header->entry == 0x8000);
     CHECK(header->programHeaderCount == 8);
     CHECK(header->sectionHeaderCount == 25);
+    CHECK(header->sectionHeaderOffset == 0x2000);
+    CHECK(header->headerSize == 52);
     CHECK(binhound::machineName(header->machine) == "ARM");
     CHECK(binhound::typeName(header->type) == "EXEC");
 }
@@ -165,4 +184,38 @@ TEST_CASE("elf header: names")
     CHECK(binhound::machineName(0x9999) == "unknown");
     CHECK(binhound::typeName(0x9999) == "unknown");
     CHECK(binhound::machineName(0xB7) == "AArch64");
+}
+
+TEST_CASE("elf header: parses ELF32 big endian")
+{
+    const auto data = makeElf32(false);
+    const auto header = binhound::parseElfHeader(data);
+
+    REQUIRE(header.has_value());
+    CHECK_FALSE(header->is64Bit);
+    CHECK(header->endian == Endian::Big);
+    CHECK(header->entry == 0x8000);
+    CHECK(binhound::machineName(header->machine) == "ARM");
+}
+
+TEST_CASE("elf header: truncated ELF64 header")
+{
+    const auto data = makeElf64(true);
+
+    CHECK(binhound::parseElfHeader(std::span<const std::byte>(data).first(63)).error().code ==
+          Error::Code::Truncated);
+}
+
+TEST_CASE("elf header: all machine and type names")
+{
+    CHECK(binhound::machineName(0x03) == "x86");
+    CHECK(binhound::machineName(0x28) == "ARM");
+    CHECK(binhound::machineName(0x08) == "MIPS");
+    CHECK(binhound::machineName(0x14) == "PowerPC");
+    CHECK(binhound::machineName(0xF3) == "RISC-V");
+    CHECK(binhound::typeName(0) == "NONE");
+    CHECK(binhound::typeName(1) == "REL");
+    CHECK(binhound::typeName(2) == "EXEC");
+    CHECK(binhound::typeName(3) == "DYN");
+    CHECK(binhound::typeName(4) == "CORE");
 }

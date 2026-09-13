@@ -29,3 +29,16 @@ add_test(NAME cli.scan_minimal
     COMMAND binhound scan "${CMAKE_CURRENT_SOURCE_DIR}/fixtures/elf64_minimal.bin")
 set_tests_properties(cli.scan_minimal PROPERTIES
     PASS_REGULAR_EXPRESSION "Class:.*ELF64;Type:.*EXEC;Machine:.*x86-64")
+
+macro(binhound_expect_scan_error name fixture expected)
+    add_test(NAME ${name}
+        COMMAND "${CMAKE_COMMAND}"
+            -DBINHOUND_EXE=$<TARGET_FILE:binhound>
+            -DFIXTURE=${fixture}
+            -DEXPECTED=${expected}
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/check_scan_error.cmake")
+endmacro()
+
+binhound_expect_scan_error(cli.scan_no_args NONE "requires a file argument")
+binhound_expect_scan_error(cli.scan_missing /file/che/non/esiste_xyz "FileNotFound")
+binhound_expect_scan_error(cli.scan_text "${CMAKE_CURRENT_SOURCE_DIR}/fixtures/not_elf.txt" "NotElf")
