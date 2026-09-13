@@ -1,6 +1,9 @@
 add_executable(unit_tests
     unit/main.cpp
-    unit/test_error.cpp)
+    unit/test_bytes.cpp
+    unit/test_elf_header.cpp
+    unit/test_error.cpp
+    unit/test_reader.cpp)
 
 target_link_libraries(unit_tests PRIVATE
     binhound_core

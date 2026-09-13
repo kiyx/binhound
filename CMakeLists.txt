@@ -103,15 +103,27 @@ else()
     endif()
 endif()
 
+set(BINHOUND_CORE_SOURCES
+    src/util/error.cpp
+    src/util/reader.cpp
+    src/util/bytes.cpp
+    src/parser/elf/header.cpp)
+
+set(BINHOUND_CORE_HEADERS
+    src/util/error.hpp
+    src/util/reader.hpp
+    src/util/bytes.hpp
+    src/parser/elf/header.hpp)
+
 add_library(binhound_core STATIC
-    src/util/error.cpp)
+    ${BINHOUND_CORE_SOURCES})
 
 target_sources(binhound_core
     PUBLIC
         FILE_SET HEADERS
         BASE_DIRS src
         FILES
-            src/util/error.hpp)
+            ${BINHOUND_CORE_HEADERS})
 
 target_include_directories(binhound_core PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
@@ -142,11 +154,14 @@ endif()
 
 find_program(CLANG_FORMAT_PROGRAM clang-format)
 if(CLANG_FORMAT_PROGRAM)
+    file(GLOB_RECURSE BINHOUND_FORMAT_FILES CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.hpp")
+
     add_custom_target(format
-        COMMAND "${CLANG_FORMAT_PROGRAM}" -i
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/util/error.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/util/error.hpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/cli/main.cpp
+        COMMAND "${CLANG_FORMAT_PROGRAM}" -i ${BINHOUND_FORMAT_FILES}
         COMMENT "Running clang-format"
         VERBATIM)
 endif()
