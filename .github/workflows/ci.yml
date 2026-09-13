@@ -130,16 +130,17 @@ jobs:
         run: ctest --test-dir build/coverage --output-on-failure
       - name: Generate coverage report
         run: |
-          gcovr -r . build/coverage --filter src/ \
+          gcovr -r . build/coverage --filter src/ --exclude-throw-branches \
             --xml-pretty -o coverage.xml \
             --html-details -o coverage.html \
             --txt
       - name: Enforce coverage threshold
-        # Ratchet: branch coverage measured at ~61% with gcovr 7 + GCC 13 (Sep 2026).
-        # NOTE: plain gcov text parsing overcounts branches; measure with gcovr only.
+        # Ratchet: measured 99.5% lines / 97.4% branches with gcovr 7 + GCC 13
+        # (Sep 2026). Unwind arcs are excluded; the rest is documented in code.
         # Raise both gates as coverage improves.
         run: |
-          gcovr -r . build/coverage --filter src/ --fail-under-line 85 --fail-under-branch 60
+          gcovr -r . build/coverage --filter src/ --exclude-throw-branches \
+            --fail-under-line 99 --fail-under-branch 96
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
